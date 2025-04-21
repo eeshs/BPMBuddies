@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Music Creator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .interval-row {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .add-interval-btn {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Workout Music Creator</h1>
+        <p class="lead">Create a custom workout playlist by specifying intervals with target BPM and optional energy levels.</p>
+        
+        <form id="interval-form" action="" method="post">
+            <div id="intervals-container">
+                <!-- Interval rows will be added here -->
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center add-interval-btn">
+                <button type="button" class="btn btn-outline-primary" id="add-interval">Add Interval</button>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                <button type="submit" formaction="{{ url_for('generate', method='greedy') }}" class="btn btn-success me-md-2">Generate Playlist (Greedy)</button>
+                <button type="submit" formaction="{{ url_for('generate', method='graph') }}" class="btn btn-info">Generate Playlist (Graph)</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const intervalsContainer = document.getElementById('intervals-container');
+            const addIntervalBtn = document.getElementById('add-interval');
+            let intervalCount = 0;
+            
+            // Function to create a new interval row
+            function createIntervalRow() {
+                const row = document.createElement('div');
+                row.className = 'interval-row';
+                row.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="bpm_${intervalCount}" class="form-label">Target BPM</label>
+                            <input type="number" class="form-control" id="bpm_${intervalCount}" name="bpm_${intervalCount}" required min="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="duration_${intervalCount}" class="form-label">Duration (minutes)</label>
+                            <input type="number" class="form-control" id="duration_${intervalCount}" name="duration_${intervalCount}" required min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="energy_${intervalCount}" class="form-label">Energy (0-1, optional)</label>
+                            <input type="number" class="form-control" id="energy_${intervalCount}" name="energy_${intervalCount}" min="0" max="1" step="0.1">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger mb-3 remove-interval">×</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listener to remove button
+                row.querySelector('.remove-interval').addEventListener('click', function() {
+                    row.remove();
+                });
+                
+                return row;
+            }
+            
+            // Add first interval row
+            intervalsContainer.appendChild(createIntervalRow());
+            intervalCount++;
+            
+            // Add event listener to add interval button
+            addIntervalBtn.addEventListener('click', function() {
+                intervalsContainer.appendChild(createIntervalRow());
+                intervalCount++;
+            });
+        });
+    </script>
+</body>
+</html> 
